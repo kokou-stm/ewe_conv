@@ -1,0 +1,8 @@
+
+  
+services:
+  app:
+    image: sekponakokou/fastapi-app:latest
+    ports:
+      - "80:80"
+
