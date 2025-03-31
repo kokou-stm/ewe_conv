@@ -18,7 +18,8 @@ jobs:
         KEY: ${{ secrets.EC2_KEY }}
       run: |
         echo "$KEY" > private_key.pem
-        chmod 600 private_key.pem
+        sudo chmod 600 private_key.pem
+        sudo chmod 400 fastapi_ewe_key.pem
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
       env:
@@ -32,6 +33,7 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
+        
         scp -i private_key.pem docker-compose.yml $USER@$HOST:/home/$USER/
         if [ -f .env ]; then
           scp -i private_key.pem .env $USER@$HOST:/home/$USER/
