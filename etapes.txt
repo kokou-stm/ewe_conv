@@ -1,9 +1,9 @@
 - Mettre la clé dans le meme folder (racine)
- chmod 400 fastapi_ewe_key.pem
+ chmod 400 ewe_instance.pem.pem
 
  -Se connecter au server:
    (ssh -i nom_de_la_clé.pem EC2_USERNAME@PUBLIC_IP)
-   ssh -i fastapi_ewe_key.pem ec2-user@3.95.150.56
+   ssh -i ewe_instance.pem.pem ec2-user@3.95.150.56
 
 -Si c'est une instance amazon linux: 
   sudo yum update -y , si c'est ubuntu: sudo apt update
