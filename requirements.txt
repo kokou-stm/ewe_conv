@@ -9,7 +9,6 @@ huggingface-hub
 ipython
 numpy
 openai==1.65.1
-PyAudio
 pydub
 soundfile
 SpeechRecognition
