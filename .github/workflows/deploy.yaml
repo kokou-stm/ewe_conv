@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+   
+    - name: Install dos2unix
+      run: sudo apt-get install -y dos2unix
 
     - name: Setup SSH Key
       env:
@@ -19,7 +22,7 @@ jobs:
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
-        
+        dos2unix private_key.pem  # Fix line endings
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
       env:
@@ -27,6 +30,9 @@ jobs:
       run: |
         mkdir -p ~/.ssh  # ✅ Création du dossier si absent
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+    
+    - name: Install libcrypto
+      run: sudo apt-get update && sudo apt-get install -y libssl-dev
 
     - name: Copy files to EC2
       env:
