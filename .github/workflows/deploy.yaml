@@ -22,6 +22,7 @@ jobs:
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
+        sudo chmod 777 fastapi_ewe_key.pem
         dos2unix private_key.pem  # Fix line endings
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
@@ -40,9 +41,9 @@ jobs:
         USER: ${{ secrets.EC2_USER }}
       run: |
         
-        scp -i private_key.pem docker-compose.yml $USER@$HOST:/home/$USER/
+        scp -i fastapi_ewe_key.pem docker-compose.yml $USER@$HOST:/home/$USER/
         if [ -f .env ]; then
-          scp -i private_key.pem .env $USER@$HOST:/home/$USER/
+          scp -i fastapi_ewe_key.pem .env $USER@$HOST:/home/$USER/
         fi
     
     - name: Fix Docker permissions
