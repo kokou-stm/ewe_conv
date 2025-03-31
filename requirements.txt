@@ -39,7 +39,7 @@ jedi==0.19.2
 Jinja2==3.1.5
 jiter==0.8.2
 joblib==1.4.2
-lazy_loader==0.4
+lazy_loader
 librosa
 llvmlite==0.44.0
 MarkupSafe==3.0.2
