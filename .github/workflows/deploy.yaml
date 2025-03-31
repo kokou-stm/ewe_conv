@@ -22,7 +22,7 @@ jobs:
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
-        sudo chmod 600 ewe_instance.pem.pem
+        sudo chmod 600 ewe_instance.pem
         dos2unix private_key.pem  # Fix line endings
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
@@ -41,9 +41,9 @@ jobs:
         USER: ${{ secrets.EC2_USER }}
       run: |
         
-        scp -i ewe_instance.pem.pem docker-compose.yml $USER@$HOST:/home/$USER/
+        scp -i ewe_instance.pem docker-compose.yml $USER@$HOST:/home/$USER/
         if [ -f .env ]; then
-          scp -i ewe_instance.pem.pem .env $USER@$HOST:/home/$USER/
+          scp -i ewe_instance.pem .env $USER@$HOST:/home/$USER/
         fi
     
     - name: Fix Docker permissions
