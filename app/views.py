@@ -26,7 +26,7 @@ def send_audio(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 from pydub import AudioSegment 
-import torch, librosa
+import torch
 
 # Charger les modèles une seule fois et les garder en mémoire
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
