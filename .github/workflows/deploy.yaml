@@ -22,7 +22,7 @@ jobs:
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
-        sudo chmod 777 fastapi_ewe_key.pem
+        sudo chmod 600 fastapi_ewe_key.pem
         dos2unix private_key.pem  # Fix line endings
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
