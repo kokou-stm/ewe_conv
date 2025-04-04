@@ -19,3 +19,10 @@
  
 -Pour les logs:
   docker logs ec2-user-app-1
+
+-Augmenter l'espace si necessaire:
+ Allez dans la console AWS > Volumes EBS > Sélectionnez le volume attaché à votre instance.
+ sudo growpart /dev/nvme0n1 1
+ sudo xfs_growfs /
+
+
