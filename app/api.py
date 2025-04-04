@@ -19,6 +19,8 @@ tokenizer = AutoTokenizer.from_pretrained("facebook/mms-tts-ewe")
 stt_pipeline = pipeline("automatic-speech-recognition", model="abiyo27/whisper-small-ewe", device=0 if device.type == 'cuda' else -1)
 
 
+# Configuration de l'API OpenAI
+
 AZURE_EMBEDDING_ENDPOINT="https://realtimekokou.openai.azure.com/openai/deployments/text-embedding-3-large/embeddings?api-version=2023-05-15"
 AZURE_EMBEDDING_API_KEY="h5R1YOBt2Q5WU56488stKWc7GiO9nEG3Z344ITLK3mTb6uGkdlKLJQQJ99BAACYeBjFXJ3w3AAABACOGLM5j"
 AZURE_CHAT_ENDPOINT="https://chatlearning.openai.azure.com/openai/deployments/gpt-35-turbo/chat/completions?api-version=2024-08-01-preview"
