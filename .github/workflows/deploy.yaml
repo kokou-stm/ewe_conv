@@ -16,20 +16,26 @@ jobs:
     - name: Install dos2unix
       run: sudo apt-get install -y dos2unix
 
+    - name: Free up Disk Space
+      run: |
+        docker rmi $(docker images -f "dangling=true" -q) || true
+        docker system prune -f || true
+        sudo rm -rf /path/to/large/directory || true
+        df -h
+
     - name: Setup SSH Key
       env:
         KEY: ${{ secrets.EC2_KEY }}
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
-        sudo chmod 600 ewe_instance.pem
         dos2unix private_key.pem  # Fix line endings
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
       env:
         HOST: ${{ secrets.EC2_HOST }}
       run: |
-        mkdir -p ~/.ssh  # ✅ Création du dossier si absent
+        mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
     
     - name: Install libcrypto
@@ -40,10 +46,9 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        
-        scp -i ewe_instance.pem docker-compose.yml $USER@$HOST:/home/$USER/
+        scp -i private_key.pem docker-compose.yml $USER@$HOST:/home/$USER/
         if [ -f .env ]; then
-          scp -i ewe_instance.pem .env $USER@$HOST:/home/$USER/
+          scp -i private_key.pem .env $USER@$HOST:/home/$USER/
         fi
     
     - name: Fix Docker permissions
@@ -53,7 +58,7 @@ jobs:
       run: |
         ssh -i private_key.pem $USER@$HOST << 'EOF'
           sudo usermod -aG docker $USER
-          sudo chmod 666 /var/run/docker.sock  # ✅ Donne l'accès au socket Docker
+          sudo chmod 666 /var/run/docker.sock
         EOF
 
     - name: Install Docker and Docker Compose on EC2
@@ -67,7 +72,7 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
 
-          # ✅ Vérifie si Docker Compose est déjà installé
+          # Vérifie si Docker Compose est installé
           if ! command -v docker-compose &> /dev/null; then
             sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
@@ -77,11 +82,8 @@ jobs:
           fi
         EOF
 
-
     - name: Build and Push Docker Image
       env:
-        HOST: ${{ secrets.EC2_HOST }}
-        USER: ${{ secrets.EC2_USER }}
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
@@ -97,8 +99,8 @@ jobs:
       run: |
         ssh -i private_key.pem $USER@$HOST << 'EOF'
           cd /home/$USER/
-          sudo docker-compose down  # ✅ Ajout de sudo pour éviter les erreurs de permission
-          sudo docker-compose up -d --build  # ✅ Ajout de sudo
+          sudo docker-compose down
+          sudo docker-compose up -d --build
         EOF
 
     - name: Clean up

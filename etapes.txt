@@ -12,6 +12,8 @@
   sudo systemctl start docker
   docker --version
 
+  ou sudo yum update -y && sudo yum install -y docker && sudo systemctl enable docker && sudo systemctl start docker && sudo usermod -aG docker ec2-user
+ 
 -Ajout du user au Group docker
  sudo usermod -aG docker ec2-user
  
