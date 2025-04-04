@@ -6,22 +6,39 @@ on:
       - master
 
 jobs:
-  deploy:
+  pre-cleanup:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-   
+      uses: actions/checkout@v2
+
+    - name: Pre-clean Disk Space
+      run: |
+        # Clean up Docker images and containers
+        docker stop $(docker ps -aq) || true
+        docker rm $(docker ps -aq) || true
+        docker rmi $(docker images -aq) || true
+        docker system prune -af --volumes || true
+
+        # Clean up apt cache
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        
+        # Clean up npm cache
+        npm cache clean --force || true
+        
+        # Show disk space usage
+        df -h
+
+  build:
+    runs-on: ubuntu-latest
+    needs: pre-cleanup  # Execute after pre-cleanup job
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Install dos2unix
       run: sudo apt-get install -y dos2unix
-
-    - name: Free up Disk Space
-      run: |
-        docker rmi $(docker images -f "dangling=true" -q) || true
-        docker system prune -f || true
-        sudo rm -rf /path/to/large/directory || true
-        df -h
 
     - name: Setup SSH Key
       env:
@@ -29,7 +46,7 @@ jobs:
       run: |
         echo "$KEY" > private_key.pem
         sudo chmod 600 private_key.pem
-        dos2unix private_key.pem  # Fix line endings
+        dos2unix private_key.pem
 
     - name: Ensure SSH folder exists and add EC2 to known hosts
       env:
@@ -37,7 +54,7 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-    
+
     - name: Install libcrypto
       run: sudo apt-get update && sudo apt-get install -y libssl-dev
 
@@ -50,7 +67,7 @@ jobs:
         if [ -f .env ]; then
           scp -i private_key.pem .env $USER@$HOST:/home/$USER/
         fi
-    
+
     - name: Fix Docker permissions
       env:
         HOST: ${{ secrets.EC2_HOST }}
@@ -72,13 +89,13 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
 
-          # Vérifie si Docker Compose est installé
+          # Install Docker Compose if not present
           if ! command -v docker-compose &> /dev/null; then
             sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
             sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
           else
-            echo "Docker Compose est déjà installé."
+            echo "Docker Compose is already installed."
           fi
         EOF
 
