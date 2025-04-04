@@ -1,6 +1,6 @@
 from transformers import VitsModel, AutoTokenizer
 import torch
-import scipy
+
 import numpy as np
 from transformers import pipeline
 

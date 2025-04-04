@@ -89,17 +89,23 @@ import os
 
 from google.cloud import translate
 from google.cloud import translate_v2 as translate
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./premium-axis-450910-f6-8c3d28f15cef.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(os.getcwd() , 'premium-axis-450910-f6-8c3d28f15cef.json')
+
+print("Path : ", os.path.join(os.getcwd() , 'premium-axis-450910-f6-8c3d28f15cef.json'))
 
 def translate_text(text: str, target_language: str = "ee"):
     """
     Traduit un texte en Ewe en utilisant Google Cloud Translation API.
     """
-    client = translate.Client.from_service_account_json(f'{settings.BASE_DIR}/app/premium-axis-450910-f6-8c3d28f15cef.json')
+    client = translate.Client.from_service_account_json(os.path.join(os.getcwd(), 'premium-axis-450910-f6-8c3d28f15cef.json'))
     result = client.translate(text, target_language=target_language)
 
     return result["translatedText"]
 
+
+
+text_out = translate_text("Bonjour, comment allez vous?", target_language='ee')
+print(text_out)
 
 def ask_ai_voice_to_voice(path):
 
